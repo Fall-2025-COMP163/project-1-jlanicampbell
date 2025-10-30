@@ -20,20 +20,22 @@ def create_character(name, character_class):
     char = create_character("Aria", "Mage")
     # Should return: {"name": "Aria", "class": "Mage", "level": 1, "strength": 5, "magic": 15, "health": 80, "gold": 100}
     """
-    # TODO: 
+    # make sure name is a string and not empty 
     if type(name) != str or name.strip() == "":
         return None
-
+    # check if player picked a valid class
     if character_class not in VALID_CLASSES:
         return None
     
-    level = 1
+    level = 1 # all characters start at level 1
 
+    # get base stats for chosen class
     result = calculate_stats(character_class, level)
     if result is None:
         return None
     strength, magic, health = result
 
+    # store all info in one dictionary
     character = {
         "name": name.strip(),
         "class": character_class,
@@ -41,7 +43,7 @@ def create_character(name, character_class):
         "strength": strength,
         "magic": magic,
         "health": health,
-        "gold": 100
+        "gold": 100 # starting gold for all players
     }
     return character
 
@@ -56,7 +58,7 @@ def calculate_stats(character_class, level):
     - Rogues: Medium strength, medium magic, low health
     - Clerics: Medium strength, high magic, high health
     """
-    # TODO: Implement this function
+    # each class has different starting stats
     if character_class == "Warrior":
         strength, magic, health = 15, 3, 120
     elif character_class == "Mage":
@@ -66,8 +68,9 @@ def calculate_stats(character_class, level):
     elif character_class == "Cleric":
         strength, magic, health = 8, 12, 110
     else:
-        return None
+        return None # invalid class
     
+    # increase stats slightly based on level
     strength = strength + (level - 1) * 2
     magic = magic + (level - 1) * 2
     health = health + (level - 1) * 10
@@ -88,12 +91,15 @@ def save_character(character, filename):
     Health: [health]
     Gold: [gold]
     """
-    
+    # savess all character info to a file (like a save slot)
     folder = os.path.dirname(filename)
     if folder != "" and not os.path.exists(folder):
-        return False
+        return False # stop if folder doesn't exist
     
+    # open file to write text
     file = open(filename, "w", encoding="utf-8")
+
+    # write every piece of info on its own line
     file.write("Character Name: " + character["name"] + "\n")
     file.write("Class: " + character["class"] + "\n")
     file.write("Level: " + str(character["level"]) + "\n")
@@ -102,7 +108,7 @@ def save_character(character, filename):
     file.write("Health: " + str(character["health"]) + "\n")
     file.write("Gold: " + str(character["gold"]) + "\n")
     
-    file.close()
+    file.close() # always close after writing
     
     return True
 
@@ -111,15 +117,16 @@ def load_character(filename):
     Loads character from text file
     Returns: character dictionary if successful, None if file not found
     """
-    
+    # check if the file exists first
     if not os.path.exists(filename):
         return None
 
     file = open(filename, "r", encoding="utf-8")
     lines = file.readlines()
     file.close()
-    character = {}
 
+    # store data inside a dictionary
+    character = {}
     character["name"] = lines[0].replace("Character Name: ", "").strip()
     character["class"] = lines[1].replace("Class: ", "").strip()
     character["level"] = int(lines[2].replace("Level: ", "").strip())
@@ -161,12 +168,16 @@ def level_up(character):
     Modifies the character dictionary directly
     Returns: None
     """
+    # add 1 to the current level
     character["level"] = character["level"] + 1
+
+    # recalculate new stats using calculate_stats
     strength, magic, health = calculate_stats(character["class"], character["level"])
     character["strength"] = strength
     character["magic"] = magic
     character["health"] = health
 
+    # display confirmation message
     print("Level up! " + character["name"] + " is not level " + str(character["level"]) + "!")
 
 # Main program area (optional - for testing your functions)
