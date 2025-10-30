@@ -2,7 +2,8 @@ import pytest
 import sys
 import os
 
-# Import student's code
+from project1_starter import create_character, calculate_stats
+
 try:
     from project1_starter import create_character, calculate_stats
 except ImportError:

@@ -7,6 +7,8 @@ AI Usage: [Document any AI assistance used]
 Example: AI helped with file I/O error handling logic in save_character function
 """
 
+import os
+
 VALID_CLASSES = ["Warrior", "Mage", "Rogue", "Cleric"]
 
 def create_character(name, character_class):
@@ -27,16 +29,19 @@ def create_character(name, character_class):
     
     level = 1
 
-    stats = calculate_stats(character_class, level)
+    result = calculate_stats(character_class, level)
+    if result is None:
+        return None
+    strength, magic, health = result
 
     character = {
         "name": name.strip(),
         "class": character_class,
         "level": level,
-        "strength": stats["strength"],
-        "magic": stats["magic"],
-        "health": stats["magic"],
-        "gold": stats["gold"]
+        "strength": strength,
+        "magic": magic,
+        "health": health,
+        "gold": 100
     }
     return character
 
@@ -53,21 +58,13 @@ def calculate_stats(character_class, level):
     """
     # TODO: Implement this function
     if character_class == "Warrior":
-        strength = 15
-        magic = 3
-        health = 120
+        strength, magic, health = 15, 3, 120
     elif character_class == "Mage":
-        strength = 5
-        magic = 15
-        health = 80
+        strength, magic, health = 5, 15, 80
     elif character_class == "Rogue":
-        strength = 10
-        magic = 8
-        health = 90
+        strength, magic, health = 10, 8, 90
     elif character_class == "Cleric":
-        strength = 8
-        magic = 12
-        health = 120 
+        strength, magic, health = 8, 12, 110
     else:
         return None
     
@@ -75,16 +72,7 @@ def calculate_stats(character_class, level):
     magic = magic + (level - 1) * 2
     health = health + (level - 1) * 10
 
-    gold = 100
-
-    stats = {
-        "strength": strength,
-        "magic": magic,
-        "health": health,
-        "gold": gold
-    }
-
-    return stats
+    return (strength, magic, health)
 
 def save_character(character, filename):
     """
@@ -100,15 +88,19 @@ def save_character(character, filename):
     Health: [health]
     Gold: [gold]
     """
-    file = open(filename, "w")
-
+    
+    folder = os.path.dirname(filename)
+    if folder != "" and not os.path.exists(folder):
+        return False
+    
+    file = open(filename, "w", encoding="utf-8")
     file.write("Character Name: " + character["name"] + "\n")
     file.write("Class: " + character["class"] + "\n")
     file.write("Level: " + str(character["level"]) + "\n")
     file.write("Strength: " + str(character["strength"]) + "\n")
     file.write("Magic: " + str(character["magic"]) + "\n")
     file.write("Health: " + str(character["health"]) + "\n")
-    file.write("Gold: " + str(character["gld"]) + "\n")
+    file.write("Gold: " + str(character["gold"]) + "\n")
     
     file.close()
     
@@ -119,7 +111,11 @@ def load_character(filename):
     Loads character from text file
     Returns: character dictionary if successful, None if file not found
     """
-    file = open(filename, "r")
+    
+    if not os.path.exists(filename):
+        return None
+
+    file = open(filename, "r", encoding="utf-8")
     lines = file.readlines()
     file.close()
     character = {}
@@ -166,13 +162,10 @@ def level_up(character):
     Returns: None
     """
     character["level"] = character["level"] + 1
-
-    new_stats = calculate_stats(character["class"], character["level"])
-
-    character["strength"] = new_stats["strength"]
-    character["magic"] = new_stats["magic"]
-    character["health"] = new_stats["health"]
-    character["gold"] = new_stats["gold"]
+    strength, magic, health = calculate_stats(character["class"], character["level"])
+    character["strength"] = strength
+    character["magic"] = magic
+    character["health"] = health
 
     print("Level up! " + character["name"] + " is not level " + str(character["level"]) + "!")
 
