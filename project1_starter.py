@@ -3,7 +3,7 @@ COMP 163 - Project 1: Character Creator & Saving/Loading
 Name: Jelani Campbell
 Date: 10/25/25
 
-AI Usage: [Document any AI assistance used]
+AI Usage: I used AI to help **format** the `save_character()` function with the correct file methods (`open`, `write`, `close`) and UTF-8 encoding, with short explanations and examples
 Example: AI helped with file I/O error handling logic in save_character function
 """
 
